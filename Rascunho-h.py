@@ -1,31 +1,18 @@
-import json
-
-def JSONMessageData(source,destination,payload):
-    if (not isinstance(source, str) or not isinstance(destination, str) or not isinstance(payload, str)):
-        raise TypeError("Tipo Não suportado para a função")
-
-    message = {
-    "type"          : "data",
-    "source"        : source,
-    "destination"   : destination,
-    "payload"       : payload,
-    }
-    message = json.dumps(message)
-    return message
-
-def JSONMessageTrace(source,destination,hops):
-    if (not isinstance(source, str) or not isinstance(destination, str) or not isinstance(hops, list)):
-        raise TypeError("Tipo Não suportado para a função")
-    message = {
-    "type" : "trace",
-    "destination" : destination,
-    "hops" : hops
-    }
-    message = json.dumps(message)
-    return message
+import JSON
+import Regex
 
 
-hops =  ["127.0.1.5"]
-mensagem = JSONMessageTrace("abb","abb",hops)
-print(type(hops))
+distance =  {
+"127.0.1.4": 10,
+"127.0.1.5": 0,
+"127.0.1.2": 10,
+"127.0.1.3": 10
+}
+mensagem = JSON.Update("abb","abb",distance)
+print(type(distance))
 print(mensagem)
+
+if Regex.CheckADD("add 192.168.15.5 0"):
+  print("YES! We have a match!")
+else:
+  print("No match")
