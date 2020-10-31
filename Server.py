@@ -1,6 +1,7 @@
 import socket
 import sys
 import getopt
+import Regex
 from ServerClass import ServerThread
 
 BUFSZ = 1024
@@ -30,7 +31,12 @@ print ('UPDATE-PERIOD   :', update_period)
 
 
 threadServer = ServerThread(addr,55151)
+
 threadServer.start()
+
+
+
+
 
 #Parte do cliente embutido
 
@@ -40,6 +46,15 @@ print('Para sair use CTRL+X\n')
 msg = input()
 
 while(msg != '\x18'):
-    udp.sendto (msg.encode(), dest)
+    if(Regex.CheckADD(msg)):
+        comandos = msg.split()
+        print("Comando ADD Reconhecido")
+        threadServer.AddFromTable(comandos[1],comandos[2])
+        print(threadServer.myRouteTable)
+    if(Regex.CheckDEL(msg)):
+        comandos = msg.split()
+        print("Comando DEL Reconhecido")
+        threadServer.DelFromTable(comandos[1])
+    # udp.sendto (msg.encode(), dest)
     msg = input()
 udp.close()

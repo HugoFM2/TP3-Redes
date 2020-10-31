@@ -30,6 +30,7 @@ def Trace(source,destination,hops):
         raise TypeError("Tipo Não suportado para a função")
     message = {
     "type" : "trace",
+    "source" : source,
     "destination" : destination,
     "hops" : hops
     }
