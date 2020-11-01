@@ -2,7 +2,7 @@ import json
 
 def Data(source,destination,payload):
     if (not isinstance(source, str) or not isinstance(destination, str) or not isinstance(payload, str)):
-        raise TypeError("Tipo Não suportado para a função")
+        raise TypeError("Tipo Nao suportado para a funcao")
 
     message = {
     "type"          : "data",
@@ -15,7 +15,7 @@ def Data(source,destination,payload):
 
 def Update(source,destination,distances):
     if (not isinstance(source, str) or not isinstance(destination, str) or not isinstance(distances, dict)):
-        raise TypeError("Tipo Não suportado para a função")
+        raise TypeError("Tipo Nao suportado para a funcao")
     message = {
     "type"              : "update",
     "source"            : source,
@@ -27,7 +27,7 @@ def Update(source,destination,distances):
 
 def Trace(source,destination,hops):
     if (not isinstance(source, str) or not isinstance(destination, str) or not isinstance(hops, list)):
-        raise TypeError("Tipo Não suportado para a função")
+        raise TypeError("Tipo Nao suportado para a funcao")
     message = {
     "type" : "trace",
     "source" : source,

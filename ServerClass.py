@@ -8,12 +8,14 @@ BUFSZ = 1024
 
 class ServerThread(Thread):
 
-    def __init__ (self, addr,PORT):
+    def __init__ (self, addr,PORT, TimeToSend):
           Thread.__init__(self)
           self.udp = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
           self.udp.bind((addr,PORT))
-          self.myIP = addr
-          self.myRouteTable = {}
+          self.myIP = addr          
+          self.myRouteTable = {"127.0.0.1": [[18, "127.0.0.1"]], "127.0.0.4": [[10, "127.0.0.4"]]}
+          #AAA ips temporarios para verificar a questao do update
+          self.timeToSend = TimeToSend
 
     def run(self):
         while True:
@@ -32,7 +34,7 @@ class ServerThread(Thread):
                     if(msgload["type"] == "data"): #Repassar mensagem se for do tipo data
                         proxServ = FuncoesApoio.GetMenorRota(self.myIP,msgload["destination"],self.myRouteTable) # retorna o proximo servidor a repassar a mensagem
                         if(proxServ == 0):
-                            print("Rota não disponivel para",msgload["destination"])
+                            print("Rota nao disponivel para",msgload["destination"])
                         else:
                             print("Enviar entao essa mensagem para:",proxServ) #
 
@@ -66,7 +68,7 @@ class ServerThread(Thread):
                 print("CONEXAO:", conexao)
                 if(conexao[1] == self.myIP): # Se a conexao foi feita desse enlace, remover conexao
                     self.myRouteTable[ip].remove(conexao)
-            if(len(self.myRouteTable[ip]) == 0): # Se após essa remoção, a lista estiver vazia, remover a key da lista
+            if(len(self.myRouteTable[ip]) == 0): # Se apos essa remocao, a lista estiver vazia, remover a key da lista
                 self.myRouteTable.pop(ip)
 
     def TraceCommand(self,ipDest): # Formata o 1o trace e envia para o proximo servidor
@@ -85,3 +87,38 @@ class ServerThread(Thread):
             print("Enviar Data:",dataMsg,"para:",msg["source"]) # Enviar mensagem como data aqui
         else:
             print("Enviar trace:",resultJSON) #enviar mensagem como trace aqui
+    
+    def sendPeriodic(self, ipDest):
+        dicAux = {}
+        for i in self.myRouteTable:
+            if (i != self.myIP):
+                aux1 = FuncoesApoio.GetMenorPesoRota(self.myIP, i, self.myRouteTable)
+                aux2 = FuncoesApoio.GetMenorRota(self.myIP, i, self.myRouteTable)
+                aux3 = FuncoesApoio.GetMenorPesoRota(self.myIP, ipDest, self.myRouteTable)
+                print("i:",i)
+                print("myIp:",self.myIP)
+                print("aux1:",aux1)
+                print("aux2:",aux2)
+                print("aux3:",aux3)
+                if (ipDest != i):
+                    if(aux1[1] != self.myIP):
+                        aux1[0] = aux1[0] + aux3[0]
+                        dicAux[i] = aux1[0]
+                    else:
+                        dicAux[i] = aux1[0]
+            print("dicAux:",dicAux)
+
+
+
+#dics  = [1,2,3]
+
+#dis = [{"ipFinal" : "127.0.1.5", "pesoTotal": "10", "atravesDeQualRota": "127.0.1.5"} for k in range(len(dics))]
+
+#    def checkDicLocalAndChangePeso(dict,ipFinal,pesoNovo,rota):
+#    if 
+#    if ipFinal in dict:
+#        dict[ipFinal]
+#        dict[ipFinal]
+#            a[i]["pesoTotal"] = c
+#            a[i]["atravesDeQualRota"] = d
+

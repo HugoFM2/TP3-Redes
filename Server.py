@@ -13,7 +13,6 @@ HOST = None # Temporario, remover dps AAA
 
 options, remainder = getopt.getopt(sys.argv[1:], 'x', ['addr=',
                                                          'update-period=',
-                                                         'host=', # Temporario, remover dps AAA
                                                          ])
 
 for opt, arg in options:
@@ -29,7 +28,7 @@ print ('UPDATE-PERIOD   :', update_period)
 
 
 
-threadServer = ServerThread(addr,55151)
+threadServer = ServerThread(addr,55151, update_period)
 
 threadServer.start()
 
@@ -50,6 +49,7 @@ while(msg != '\x18'):
         print("Comando ADD Reconhecido")
         threadServer.AddFromTable(comandos[1],threadServer.myIP,comandos[2])
         print(threadServer.myRouteTable)
+        #threadServer.sendPeriodic("127.0.0.4")
     elif(Regex.CheckDEL(msg)):
         print("Comando DEL Reconhecido")
         threadServer.DelFromTable(comandos[1])
@@ -57,7 +57,7 @@ while(msg != '\x18'):
         print("Comando Trace Reconhecido")
         threadServer.TraceCommand(comandos[1])
     else:
-        print("Comando não reconhecido")
+        print("Comando nao reconhecido")
     # udp.sendto (msg.encode(), dest)
     msg = input()
 udp.close()
