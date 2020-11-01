@@ -45,13 +45,20 @@ class ServerThread(Thread):
         dest = (ipDest, 55151)
         self.udp.sendto(msg.encode(), dest)
 
-    def AddFromTable(self,ip,weight):
+    def AddFromTable(self,ipDest,ipFrom,weight): #ipFrom -> de onde a conexao vem
+        print("tipo ipfrom:",type(ipFrom))
         print("adicionado")
-        if(ip in self.myRouteTable):
-            print("ip ja adicionado, incorporando ao existente")
-            self.myRouteTable[ip].append([int(weight), self.myIP])
+        if(str(ipDest) in self.myRouteTable):
+            for conexao in (self.myRouteTable[str(ipDest)]):
+                print("ROTA:", conexao)
+                if(conexao[1] == ipFrom):
+                    self.myRouteTable[str(ipDest)].remove(conexao)
+                    print("Essa rota ja existe,removendo rota para sobescreve-la ")
+
+            print("ip ja adicionado no dicionario, incorporando a conexao a chave existente")
+            self.myRouteTable[str(ipDest)].append([int(weight), str(ipFrom)])
         else:
-            self.myRouteTable[ip] = [[int(weight), self.myIP]]
+            self.myRouteTable[str(ipDest)] = [[int(weight), ipFrom]]
 
     def DelFromTable(self,ip):
         if (ip in self.myRouteTable):

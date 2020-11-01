@@ -48,7 +48,7 @@ while(msg != '\x18'):
     comandos = msg.split()
     if(Regex.CheckADD(msg)):
         print("Comando ADD Reconhecido")
-        threadServer.AddFromTable(comandos[1],comandos[2])
+        threadServer.AddFromTable(comandos[1],threadServer.myIP,comandos[2])
         print(threadServer.myRouteTable)
     elif(Regex.CheckDEL(msg)):
         print("Comando DEL Reconhecido")
