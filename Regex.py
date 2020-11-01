@@ -8,4 +8,4 @@ def CheckDEL(command):
     return re.search("^del [\d.]+$", command)
 
 def CheckTrace(command):
-    return re.search("^del [\d.]+$", command)
+    return re.search("^trace [\d.]+$", command)

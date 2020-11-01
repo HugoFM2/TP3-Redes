@@ -46,15 +46,17 @@ print('Para sair use CTRL+X\n')
 msg = input()
 
 while(msg != '\x18'):
+    comandos = msg.split()
     if(Regex.CheckADD(msg)):
-        comandos = msg.split()
         print("Comando ADD Reconhecido")
         threadServer.AddFromTable(comandos[1],comandos[2])
         print(threadServer.myRouteTable)
     if(Regex.CheckDEL(msg)):
-        comandos = msg.split()
         print("Comando DEL Reconhecido")
         threadServer.DelFromTable(comandos[1])
+    if(Regex.CheckTrace(msg)):
+        print("Comando Trace Reconhecido")
+        threadServer.TraceCommand(comandos[1])
     # udp.sendto (msg.encode(), dest)
     msg = input()
 udp.close()
