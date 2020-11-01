@@ -66,7 +66,7 @@ class ServerThread(Thread):
         msg = JSON.Trace(self.myIP,ipDest,[self.myIP])
         proxServ = FuncoesApoio.GetMenorRota(self.myIP,ipDest,self.myRouteTable) # retorna o proximo servidor a repassar a mensagem
         self.SendMsgTo(msg,ipDest)
-        print("Enviar 1o Trace",msg)
+        print("Enviar 1o Trace:",msg)
 
     def traceRoute(self,JSONmsg): # Funcao a se usar quando recebe uma mensagem do tipo trace
         msg = json.loads(JSONmsg)
@@ -74,7 +74,6 @@ class ServerThread(Thread):
         resultJSON = json.dumps(msg)
         if(self.myIP == msg["destination"]):
             dataMsg = JSON.Data(self.myIP,msg["source"],resultJSON)
-            print("TIPODATA:",type(dataMsg))
             self.SendMsgTo(dataMsg,msg["source"])# Aqui eles se invertem uma vez q o ultimo trace q recebeu e chegou ao destino precisa repassar ao de origem
             print("Enviar Data:",dataMsg,"para:",msg["source"]) # Enviar mensagem como data aqui
         else:

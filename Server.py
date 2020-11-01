@@ -21,10 +21,9 @@ for opt, arg in options:
         addr = arg
     elif opt in ('--update-period'):
         update_period = arg
-    elif opt in ('--host'): # Temporario, remover dps AAA
-        HOST = arg
-if(HOST == None or addr == None): # Temporario, remover dps o HOST AAA
-    raise ValueError('Valor de HOST ou ADDR nao definidos na linha de comando')
+
+if(addr == None):
+    raise ValueError('Valor ADDR nao definidos na linha de comando')
 print ('ADDR   :', addr)
 print ('UPDATE-PERIOD   :', update_period)
 
@@ -51,12 +50,14 @@ while(msg != '\x18'):
         print("Comando ADD Reconhecido")
         threadServer.AddFromTable(comandos[1],comandos[2])
         print(threadServer.myRouteTable)
-    if(Regex.CheckDEL(msg)):
+    elif(Regex.CheckDEL(msg)):
         print("Comando DEL Reconhecido")
         threadServer.DelFromTable(comandos[1])
-    if(Regex.CheckTrace(msg)):
+    elif(Regex.CheckTrace(msg)):
         print("Comando Trace Reconhecido")
         threadServer.TraceCommand(comandos[1])
+    else:
+        print("Comando não reconhecido")
     # udp.sendto (msg.encode(), dest)
     msg = input()
 udp.close()
