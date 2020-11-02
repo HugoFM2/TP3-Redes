@@ -1,4 +1,5 @@
 from threading import Thread
+import threading
 import socket
 import json
 import FuncoesApoio
@@ -12,12 +13,14 @@ class ServerThread(Thread):
           Thread.__init__(self)
           self.udp = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
           self.udp.bind((addr,PORT))
-          self.myIP = addr          
-          self.myRouteTable = {"127.0.0.1": [[18, "127.0.0.1"]], "127.0.0.4": [[10, "127.0.0.4"]]}
+          self.myIP = addr
+          # self.myRouteTable = {"127.0.0.1": [[18, "127.0.0.1"]], "127.0.0.4": [[10, "127.0.0.4"]]}
+          self.myRouteTable = {}
           #AAA ips temporarios para verificar a questao do update
           self.timeToSend = TimeToSend
 
     def run(self):
+        self.sendPeriodicThread()
         while True:
             msg, (ipRecebido, portaRecebida) = self.udp.recvfrom(BUFSZ)
             print()
@@ -25,6 +28,8 @@ class ServerThread(Thread):
             msgload = json.loads(msg.decode())
             if(msgload["type"] == "trace"):
                 self.traceRoute(msg.decode())
+            elif(msgload["type"] == "update"):
+                self.ReceiveUpdate(msg.decode())
             else:
                 if(FuncoesApoio.MessageForMe(self.myIP,msgload)):
                     print("MENSAGEM PARA MIM:",msg.decode())
@@ -87,38 +92,40 @@ class ServerThread(Thread):
             print("Enviar Data:",dataMsg,"para:",msg["source"]) # Enviar mensagem como data aqui
         else:
             print("Enviar trace:",resultJSON) #enviar mensagem como trace aqui
-    
+
+
+    def sendPeriodicThread(self):
+        for i in self.myRouteTable:
+            print("ENVIANDO UPDATE para:",i)
+            self.sendPeriodic(i)
+
+        threading.Timer(self.timeToSend, self.sendPeriodicThread).start()
+
     def sendPeriodic(self, ipDest):
         dicAux = {}
         for i in self.myRouteTable:
             if (i != self.myIP):
                 aux1 = FuncoesApoio.GetMenorPesoRota(self.myIP, i, self.myRouteTable)
-                aux2 = FuncoesApoio.GetMenorRota(self.myIP, i, self.myRouteTable)
-                aux3 = FuncoesApoio.GetMenorPesoRota(self.myIP, ipDest, self.myRouteTable)
+                aux2 = FuncoesApoio.GetMenorPesoRota(self.myIP, ipDest, self.myRouteTable)
                 print("i:",i)
-                print("myIp:",self.myIP)
-                print("aux1:",aux1)
-                print("aux2:",aux2)
-                print("aux3:",aux3)
-                if (ipDest != i):
+                print("myIp:", self.myIP)
+                print("IPDest:", ipDest)
+                print("aux1:", aux1)
+                print("aux2:", aux2)
+                if (ipDest != aux1[1] and i != aux1[1]):
+                    print("ENTROU IF")
                     if(aux1[1] != self.myIP):
-                        aux1[0] = aux1[0] + aux3[0]
-                        dicAux[i] = aux1[0]
+                        pesoDist = aux1[0] + aux2[0]
+                        dicAux[i] = pesoDist
                     else:
-                        dicAux[i] = aux1[0]
-            print("dicAux:",dicAux)
+                        dicAux[self.myIP] = aux1[0]
+        print("dicAux:",dicAux)
+        msg = JSON.Update(self.myIP, ipDest, dicAux)
+        self.SendMsgTo(msg, ipDest)
 
-
-
-#dics  = [1,2,3]
-
-#dis = [{"ipFinal" : "127.0.1.5", "pesoTotal": "10", "atravesDeQualRota": "127.0.1.5"} for k in range(len(dics))]
-
-#    def checkDicLocalAndChangePeso(dict,ipFinal,pesoNovo,rota):
-#    if 
-#    if ipFinal in dict:
-#        dict[ipFinal]
-#        dict[ipFinal]
-#            a[i]["pesoTotal"] = c
-#            a[i]["atravesDeQualRota"] = d
-
+    def ReceiveUpdate(self,JSONmsg):
+        msg = json.loads(JSONmsg)
+        dicAux = msg["distances"]
+        for i in dicAux:
+            self.AddFromTable(i,msg["source"], dicAux[i])
+        print(self.myRouteTable)

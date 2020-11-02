@@ -19,7 +19,7 @@ for opt, arg in options:
     if opt in ('--addr'):
         addr = arg
     elif opt in ('--update-period'):
-        update_period = arg
+        update_period = int(arg)
 
 if(addr == None):
     raise ValueError('Valor ADDR nao definidos na linha de comando')
@@ -48,8 +48,7 @@ while(msg != '\x18'):
     if(Regex.CheckADD(msg)):
         print("Comando ADD Reconhecido")
         threadServer.AddFromTable(comandos[1],threadServer.myIP,comandos[2])
-        print(threadServer.myRouteTable)
-        #threadServer.sendPeriodic("127.0.0.4")
+        print("TABELA ROTEADOR:",threadServer.myRouteTable)
     elif(Regex.CheckDEL(msg)):
         print("Comando DEL Reconhecido")
         threadServer.DelFromTable(comandos[1])
