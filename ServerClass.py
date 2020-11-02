@@ -16,7 +16,6 @@ class ServerThread(Thread):
           self.myIP = addr
           # self.myRouteTable = {"127.0.0.1": [[18, "127.0.0.1"]], "127.0.0.4": [[10, "127.0.0.4"]]}
           self.myRouteTable = {}
-          #AAA ips temporarios para verificar a questao do update
           self.timeToSend = TimeToSend
 
     def run(self):
@@ -93,7 +92,7 @@ class ServerThread(Thread):
         else:
             print("Enviar trace:",resultJSON) #enviar mensagem como trace aqui
 
-
+    #Thread responsável pelo envio periodico da mensagem de update
     def sendPeriodicThread(self):
         for i in self.myRouteTable:
             print("ENVIANDO UPDATE para:",i)
@@ -101,28 +100,24 @@ class ServerThread(Thread):
 
         threading.Timer(self.timeToSend, self.sendPeriodicThread).start()
 
+    #Função responsável pela mensagem de update
     def sendPeriodic(self, ipDest):
         dicAux = {}
         for i in self.myRouteTable:
             if (i != self.myIP):
                 aux1 = FuncoesApoio.GetMenorPesoRota(self.myIP, i, self.myRouteTable)
                 aux2 = FuncoesApoio.GetMenorPesoRota(self.myIP, ipDest, self.myRouteTable)
-                print("i:",i)
-                print("myIp:", self.myIP)
-                print("IPDest:", ipDest)
-                print("aux1:", aux1)
-                print("aux2:", aux2)
                 if (ipDest != aux1[1] and i != aux1[1]):
-                    print("ENTROU IF")
-                    if(aux1[1] != self.myIP):
+                    if(aux1[1] != self.myIP): #Se para chegar no servidor de destino eu preciso passar por dois outros, eu incremento o valor de cada um deles
                         pesoDist = aux1[0] + aux2[0]
                         dicAux[i] = pesoDist
                     else:
                         dicAux[self.myIP] = aux1[0]
-        print("dicAux:",dicAux)
         msg = JSON.Update(self.myIP, ipDest, dicAux)
         self.SendMsgTo(msg, ipDest)
 
+
+    #Função responsável pelo recebimento das mensagens de update
     def ReceiveUpdate(self,JSONmsg):
         msg = json.loads(JSONmsg)
         dicAux = msg["distances"]

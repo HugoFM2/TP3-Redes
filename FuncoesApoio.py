@@ -16,7 +16,7 @@ def GetMenorRota(meuIP,ipDest,dict): # Retorna o IP da menor rota, para repassar
             return dict[ipDest][min[0]][1]
     return 0 # Nao existem rotas disponiveis
 
-def GetMenorPesoRota(meuIP,ipDest,dict): # Retorna o IP da menor rota, para repassar a msg
+def GetMenorPesoRota(meuIP,ipDest,dict): # Retorna o peso da menor rota, para repassar a msg
     if (ipDest in dict): # Checa se existe o ip na routeTable
         min = np.argmin(dict[ipDest],axis=0)
         return dict[ipDest][min[0]]
