@@ -16,7 +16,6 @@ class ServerThread(Thread):
           self.myIP = addr
           # self.myRouteTable = {"127.0.0.1": [[18, "127.0.0.1"]], "127.0.0.4": [[10, "127.0.0.4"]]}
           self.myRouteTable = {self.myIP : [[0,self.myIP]]}
-          #AAA ips temporarios para verificar a questao do update
           self.timeToSend = TimeToSend
 
     def run(self):
@@ -102,7 +101,7 @@ class ServerThread(Thread):
             self.SendMsgTo(resultJSON,proxServ) # Caso nao seja o ultimo, repassar para o prox serv
             # print("Enviar trace:",resultJSON) #enviar mensagem como trace aqui
 
-
+    #Thread responsável pelo envio periodico da mensagem de update
     def sendPeriodicThread(self):
         # print("COMECO ENVIO PERIODICO")
         for i in self.myRouteTable:
@@ -111,6 +110,7 @@ class ServerThread(Thread):
                 self.sendPeriodic(i)
         # print("TERMINO ENVIO PERIODICO")
         threading.Timer(self.timeToSend, self.sendPeriodicThread).start()
+
 
     #Funcao responsavel pela mensagem de update
     def sendPeriodic(self, ipDest):
@@ -124,12 +124,15 @@ class ServerThread(Thread):
                     dicAux[i] = pesoDist
                 else:
                     dicAux[self.myIP] = aux1[0]
+
         msg = JSON.Update(self.myIP, ipDest, dicAux)
 
         self.SendMsgTo(msg, ipDest)
         # print("ENVIANDO UPDATE:,",msg)
         # print()
 
+
+    #Função responsável pelo recebimento das mensagens de update
     def ReceiveUpdate(self,JSONmsg):
         msg = json.loads(JSONmsg)
         dicAux = msg["distances"]
