@@ -4,12 +4,8 @@ import getopt
 import Regex
 from ServerClass import ServerThread
 
-BUFSZ = 1024
-
-
 addr = None
 update_period = 4 # Default value for update period
-HOST = None # Temporario, remover dps AAA
 
 options, remainder = getopt.getopt(sys.argv[1:], 'x', ['addr=',
                                                          'update-period=',
@@ -47,8 +43,8 @@ while(msg != '\x18'):
     comandos = msg.split()
     if(Regex.CheckADD(msg)):
         print("Comando ADD Reconhecido")
-        threadServer.AddFromTable(comandos[1],threadServer.myIP,comandos[2])
-        print("TABELA ROTEADOR:",threadServer.myRouteTable)
+        threadServer.AddFromTable(comandos[1],comandos[1],comandos[2])
+        # print("TABELA ROTEADOR:",threadServer.myRouteTable)
     elif(Regex.CheckDEL(msg)):
         print("Comando DEL Reconhecido")
         threadServer.DelFromTable(comandos[1])
